@@ -240,11 +240,80 @@ Then we just need to add a `script` tag for our `app.js` to our `home.html`
 
 ```javascripts
 
-<script src="/javascripts/app.js"></scripts>
+<script src="/javascripts/app.js"></script>
 ```
 
+Now let's actually write some code to fetch all the `Book` models.
 
 
+```javascript
+$.get("/books").
+  done(function (data) {
+    console.log(data);
+  });
+
+```
+
+Then we can add a container to our page to append all of our books.
+
+```html
+<div id="booksCon">
+</div>
+```
+
+Now we can update our `$.get` to also append to the page.
+
+```javascript
+
+var $booksCon = $("#booksCon");
+$.get("/books").
+  done(function (data) {
+    console.log(data);
+    $(data).each(function (index, book) {
+      $booksCon.append("<div>" + book.title + "</div>");
+    });
+  });
+
+```
+
+## Better Templates (Underscore)
+
+Let's get some better templating going on in our application to avoid string concatenation.
+
+
+```bash
+bower install underscore
+```
+
+Then add a script tag to our `home.html`.
+
+
+```html
+<script type="text/template" id="bookTemp">
+  <div class="book">
+    <h2><%= title %></h2>
+  </div>
+</script>
+```
+
+Now we can modify our `javascripts/app.js` to utilize this template.
+
+
+```javascript
+var $booksCon = $("#booksCon");
+var bookHTML = $("#bookTemp").html();
+var bookTemp = _.template(bookHTML);
+$.get("/books").
+  done(function (data) {
+    console.log(data);
+    $(data).each(function (index, book) {
+      var $book = $(bookTemp(book));
+      $booksCon.append($book);
+    });
+  });
+
+
+```
 
 
 
